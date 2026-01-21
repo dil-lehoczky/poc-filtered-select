@@ -47,31 +47,5 @@ export class App {
     appointee: this.#fb.control<Appointee | null>(null, { validators: [Validators.required] }),
   });
 
-  readonly searchFilter = new Subject<string>();
-  readonly appointeeResults = signal<Appointee[]>([]);
-  readonly loadingAppointees = signal(false);
-  readonly appointeeError = signal<string | undefined>(undefined);
-
-  constructor() {
-    this.searchFilter
-      .pipe(
-        debounceTime(200),
-        distinctUntilChanged(),
-        switchMap((searchTerm) => {
-          this.appointeeError.set(undefined);
-          this.loadingAppointees.set(true);
-
-          return this.#appointees.search({ searchTerm }).pipe(
-            catchError((error: HttpErrorResponse) => {
-              this.appointeeError.set(error.message);
-              return of([]);
-            }),
-            finalize(() => this.loadingAppointees.set(false)),
-          );
-        }),
-      )
-      .subscribe((response) => {
-        this.appointeeResults.set(response);
-      });
-  }
+  readonly appointeeSearch = this.#appointees.createSearcher();
 }
