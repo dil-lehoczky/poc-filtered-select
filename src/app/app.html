@@ -24,6 +24,10 @@
         }
       </div>
     </mat-select>
+    @let control = form.controls.appointee;
+    @if (control.hasError('required')) {
+      <mat-error>Required</mat-error>
+    }
   </mat-form-field>
 </form>
 
