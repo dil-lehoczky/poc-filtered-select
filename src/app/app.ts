@@ -12,6 +12,6 @@ export class App {
   readonly appointees = inject(AppointeeService);
 
   test() {
-    this.appointees.search({ searchTerm: 'asd' }).subscribe((response) => console.log(response));
+    this.appointees.search({ searchTerm: '' }).subscribe((response) => console.log(response));
   }
 }
