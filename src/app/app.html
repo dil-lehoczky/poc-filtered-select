@@ -1,0 +1,11 @@
+<form [formGroup]="form">
+  <mat-form-field>
+    <mat-label>Appointee</mat-label>
+    <mat-select formControlName="appointee">
+      <mat-option>None</mat-option>
+      @for (appointee of appointeeResults(); track appointee.id) {
+        <mat-option [value]="appointee.id">{{ appointee.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</form>

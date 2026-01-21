@@ -1,12 +1,15 @@
-import { HttpHandler, http, HttpResponse } from 'msw';
+import { HttpHandler, http, HttpResponse, delay } from 'msw';
 import { AppointeeSearchRequestBody, AppointeeSearchResponse, Appointee } from './appointee.model';
 import { faker } from '@faker-js/faker';
 
-const mockSearchResult = faker.helpers.multiple<Appointee>((_, i) => ({
-  id: faker.string.nanoid(),
-  name: faker.person.fullName(),
-  jobTitle: faker.person.jobTitle(),
-}));
+const mockSearchResult = faker.helpers.multiple<Appointee>(
+  () => ({
+    id: faker.string.nanoid(),
+    name: faker.person.fullName(),
+    jobTitle: faker.person.jobTitle(),
+  }),
+  { count: 50 },
+);
 
 const repeatedName = 'David Bate';
 mockSearchResult.push(
@@ -27,6 +30,8 @@ export const searchAppointeesMockHandler: HttpHandler = http.post<
   AppointeeSearchRequestBody,
   AppointeeSearchResponse
 >('/appointee-search', async ({ request }) => {
+  await delay(300);
+
   const { searchTerm } = await request.clone().json();
   const filterRegexp = new RegExp(searchTerm, 'i');
 
