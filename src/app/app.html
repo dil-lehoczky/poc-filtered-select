@@ -1,11 +1,26 @@
 <form [formGroup]="form">
   <mat-form-field>
     <mat-label>Appointee</mat-label>
-    <mat-select formControlName="appointee">
-      <mat-option>None</mat-option>
-      @for (appointee of appointeeResults(); track appointee.id) {
-        <mat-option [value]="appointee.id">{{ appointee.name }}</mat-option>
-      }
+    <mat-select formControlName="appointee" placeholder="Appointee" panelWidth="">
+      <div class="search-container">
+        <mat-form-field>
+          <input matInput placeholder="Search" (input)="searchFilter.next($event.target.value)" />
+        </mat-form-field>
+      </div>
+      <div>
+        @if (loadingAppointees()) {
+          <mat-option disabled>Loading...</mat-option>
+        } @else if (appointeeError()) {
+          <mat-option disabled>Failed to fetch appointees</mat-option>
+        } @else {
+          <mat-option [value]="null">None</mat-option>
+          @for (appointee of appointeeResults(); track appointee.id) {
+            <mat-option [value]="appointee">{{ appointee.name }}</mat-option>
+          }
+        }
+      </div>
     </mat-select>
   </mat-form-field>
 </form>
+
+{{ form.value | json }}

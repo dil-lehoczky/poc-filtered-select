@@ -33,6 +33,10 @@ export const searchAppointeesMockHandler: HttpHandler = http.post<
   await delay(300);
 
   const { searchTerm } = await request.clone().json();
+  if (searchTerm === 'error') {
+    return HttpResponse.json(null, { status: 401 });
+  }
+
   const filterRegexp = new RegExp(searchTerm, 'i');
 
   const filtered = mockSearchResult.filter(({ name }) => {
