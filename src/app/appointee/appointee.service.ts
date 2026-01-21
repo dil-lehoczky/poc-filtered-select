@@ -64,6 +64,11 @@ export class AppointeeService {
         value.set(response);
       });
 
-    return { value, loading, error, updateSearchTerm };
+    return {
+      value: value.asReadonly(),
+      loading: loading.asReadonly(),
+      error: error.asReadonly(),
+      updateSearchTerm,
+    };
   }
 }
