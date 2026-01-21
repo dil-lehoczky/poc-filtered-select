@@ -32,7 +32,6 @@ export class AppointeeService {
   createSearcher() {
     assertInInjectionContext(this.createSearcher);
 
-    const destroyRef = inject(DestroyRef);
     const searchTerm$ = new Subject<string>();
     const value = signal<Appointee[]>([]);
     const loading = signal(false);
@@ -44,7 +43,7 @@ export class AppointeeService {
 
     searchTerm$
       .pipe(
-        takeUntilDestroyed(destroyRef),
+        takeUntilDestroyed(),
         debounceTime(200),
         distinctUntilChanged(),
         switchMap((searchTerm) => {
