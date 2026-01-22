@@ -5,7 +5,7 @@
       formControlName="appointee"
       placeholder="Appointee"
       panelWidth=""
-      [compareWith]="appointeeSearch.optionComparator"
+      [compareWith]="appointeeSearch.comparator"
     >
       <app-select-filter (filterChange)="appointeeSearch.updateSearchTerm($event)">
         @if (appointeeSearch.loading()) {

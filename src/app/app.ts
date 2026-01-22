@@ -8,6 +8,7 @@ import { Appointee } from './appointee/appointee.model';
 import { MatIconModule } from '@angular/material/icon';
 import { JsonPipe } from '@angular/common';
 import { SelectFilter } from './select-filter/select-filter';
+import { createSearcher } from './create-searcher';
 
 @Component({
   selector: 'app-root',
@@ -32,5 +33,8 @@ export class App {
     appointee: this.#fb.control<Appointee | null>(null, { validators: [Validators.required] }),
   });
 
-  readonly appointeeSearch = this.#appointees.createSearcher();
+  readonly appointeeSearch = createSearcher({
+    loader: ({ searchTerm }) => this.#appointees.search({ searchTerm }),
+    comparator: (a, b) => a.id === b.id,
+  });
 }

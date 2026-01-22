@@ -1,21 +1,8 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { assertInInjectionContext, DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 
-import {
-  catchError,
-  debounceTime,
-  distinctUntilChanged,
-  finalize,
-  map,
-  switchMap,
-} from 'rxjs/operators';
-import {
-  Appointee,
-  AppointeeSearchRequestBody,
-  appointeeSearchResponseSchema,
-} from './appointee.model';
-import { of, Subject } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs/operators';
+import { AppointeeSearchRequestBody, appointeeSearchResponseSchema } from './appointee.model';
 
 @Injectable({
   providedIn: 'root',
@@ -27,47 +14,5 @@ export class AppointeeService {
     return this.#http
       .post('/appointee-search', body)
       .pipe(map((response) => appointeeSearchResponseSchema.parse(response)));
-  }
-
-  createSearcher() {
-    assertInInjectionContext(this.createSearcher);
-
-    const searchTerm$ = new Subject<string>();
-    const value = signal<Appointee[]>([]);
-    const loading = signal(false);
-    const error = signal<string | undefined>(undefined);
-
-    const updateSearchTerm = (value: string) => searchTerm$.next(value);
-    const optionComparator = (a: Appointee, b: Appointee) => a.id === b.id;
-
-    searchTerm$
-      .pipe(
-        takeUntilDestroyed(),
-        debounceTime(200),
-        distinctUntilChanged(),
-        switchMap((searchTerm) => {
-          loading.set(true);
-          error.set(undefined);
-
-          return this.search({ searchTerm }).pipe(
-            catchError((searchError: HttpErrorResponse) => {
-              error.set(searchError.message);
-              return of([]);
-            }),
-            finalize(() => loading.set(false)),
-          );
-        }),
-      )
-      .subscribe((response) => {
-        value.set(response);
-      });
-
-    return {
-      value: value.asReadonly(),
-      loading: loading.asReadonly(),
-      error: error.asReadonly(),
-      updateSearchTerm,
-      optionComparator,
-    };
   }
 }
