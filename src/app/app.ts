@@ -35,6 +35,6 @@ export class App {
 
   readonly appointeeSearch = createSearcher({
     loader: ({ searchTerm }) => this.#appointees.search({ searchTerm }),
-    comparator: (a, b) => a.id === b.id,
+    identity: (option) => option.id,
   });
 }

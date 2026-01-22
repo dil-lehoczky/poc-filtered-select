@@ -12,10 +12,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 export interface CreateSearcherParams<T> {
   loader: (params: { searchTerm: string }) => Observable<T[]>;
-  comparator: (a: T, b: T) => boolean;
+  identity: (option: T) => unknown;
 }
 
-export function createSearcher<T>({ loader, comparator }: CreateSearcherParams<T>) {
+export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>) {
   assertInInjectionContext(createSearcher);
 
   const searchTerm$ = new Subject<string>();
@@ -50,6 +50,6 @@ export function createSearcher<T>({ loader, comparator }: CreateSearcherParams<T
     loading: loading.asReadonly(),
     error: error.asReadonly(),
     updateSearchTerm: (value: string) => searchTerm$.next(value),
-    comparator,
+    comparator: (a: T, b: T) => identity(a) === identity(b),
   };
 }
