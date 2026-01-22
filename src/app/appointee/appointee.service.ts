@@ -37,9 +37,8 @@ export class AppointeeService {
     const loading = signal(false);
     const error = signal<string | undefined>(undefined);
 
-    function updateSearchTerm(value: string) {
-      searchTerm$.next(value);
-    }
+    const updateSearchTerm = (value: string) => searchTerm$.next(value);
+    const optionComparator = (a: Appointee, b: Appointee) => a.id === b.id;
 
     searchTerm$
       .pipe(
@@ -68,6 +67,7 @@ export class AppointeeService {
       loading: loading.asReadonly(),
       error: error.asReadonly(),
       updateSearchTerm,
+      optionComparator,
     };
   }
 }

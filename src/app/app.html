@@ -1,7 +1,12 @@
 <form [formGroup]="form">
   <mat-form-field>
     <mat-label>Appointee</mat-label>
-    <mat-select formControlName="appointee" placeholder="Appointee" panelWidth="">
+    <mat-select
+      formControlName="appointee"
+      placeholder="Appointee"
+      panelWidth=""
+      [compareWith]="appointeeSearch.optionComparator"
+    >
       <app-select-filter (filterChange)="appointeeSearch.updateSearchTerm($event)">
         @if (appointeeSearch.loading()) {
           <mat-option disabled>Loading...</mat-option>
