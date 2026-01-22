@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { Appointee } from './appointee/appointee.model';
 import { MatIconModule } from '@angular/material/icon';
 import { JsonPipe } from '@angular/common';
+import { SelectFilter } from './select-filter/select-filter';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +19,7 @@ import { JsonPipe } from '@angular/common';
     MatInputModule,
     MatIconModule,
     JsonPipe,
+    SelectFilter,
   ],
   templateUrl: './app.html',
   styleUrls: ['./app.css'],

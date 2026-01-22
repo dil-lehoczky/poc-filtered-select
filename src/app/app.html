@@ -2,16 +2,7 @@
   <mat-form-field>
     <mat-label>Appointee</mat-label>
     <mat-select formControlName="appointee" placeholder="Appointee" panelWidth="">
-      <div class="search-container">
-        <mat-form-field>
-          <input
-            matInput
-            placeholder="Search"
-            (input)="appointeeSearch.updateSearchTerm($event.target.value)"
-          />
-        </mat-form-field>
-      </div>
-      <div>
+      <app-select-filter (filterChange)="appointeeSearch.updateSearchTerm($event)">
         @if (appointeeSearch.loading()) {
           <mat-option disabled>Loading...</mat-option>
         } @else if (appointeeSearch.error()) {
@@ -22,7 +13,7 @@
             <mat-option [value]="appointee">{{ appointee.name }}</mat-option>
           }
         }
-      </div>
+      </app-select-filter>
     </mat-select>
     @let control = form.controls.appointee;
     @if (control.hasError('required')) {
