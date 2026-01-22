@@ -10,7 +10,13 @@ import { MatIconModule } from '@angular/material/icon';
   template: `
     <div class="search-container">
       <mat-form-field>
-        <input matInput placeholder="Search" (input)="filterChange.emit($event.target.value)" />
+        <input
+          matInput
+          aria-label="Search"
+          placeholder="Search"
+          (input)="filterChange.emit($event.target.value)"
+          (keydown.space)="stopPropagation($event)"
+        />
       </mat-form-field>
     </div>
     <div>
@@ -21,4 +27,9 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class SelectFilter {
   readonly filterChange = output<string>();
+
+  stopPropagation(event: Event) {
+    // Pressing the Space would select an option in the <mat-select /> element.
+    event.stopPropagation();
+  }
 }
