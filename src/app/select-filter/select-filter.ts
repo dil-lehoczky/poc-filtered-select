@@ -40,7 +40,10 @@ export class SelectFilter {
   readonly filterChange = output<string>();
 
   constructor() {
-    const matSelect = inject(MatSelect);
+    const matSelect = inject(MatSelect, { optional: true });
+    if (!matSelect) {
+      throw new Error('<dil-select-filter /> must be used inside a <mat-select />');
+    }
     let lastSelectedOption: MatOption | MatOption[] = [];
 
     matSelect.valueChange.pipe(takeUntilDestroyed()).subscribe(() => {
