@@ -14,7 +14,7 @@
           <mat-option disabled>Failed to fetch appointees</mat-option>
         } @else {
           <mat-option [value]="null">None</mat-option>
-          @for (appointee of appointeeSearch.value(); track appointee.id) {
+          @for (appointee of appointeeSearch.values(); track appointee.id) {
             <mat-option [value]="appointee">{{ appointee.name }}</mat-option>
           }
         }
