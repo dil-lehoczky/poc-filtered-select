@@ -1,18 +1,9 @@
-import {
-  afterNextRender,
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  inject,
-  Injector,
-  output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatOption, MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NgControl } from '@angular/forms';
 
 @Component({
   selector: 'app-select-filter',
@@ -60,20 +51,6 @@ export class SelectFilter {
           : [lastSelectedOption];
         matSelect._selectionModel.select(...selection);
       }
-    });
-
-    const destroyRef = inject(DestroyRef);
-    const injector = inject(Injector);
-
-    afterNextRender({
-      read: () => {
-        const control = injector.get(NgControl, undefined, { optional: true });
-        if (control) {
-          control.valueChanges?.pipe(takeUntilDestroyed(destroyRef)).subscribe((value) => {
-            console.log(value);
-          });
-        }
-      },
     });
   }
 
