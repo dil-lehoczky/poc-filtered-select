@@ -24,7 +24,7 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
   const value = signal<T[]>([]);
   const loading = signal(false);
   const error = signal<string | undefined>(undefined);
-  const selectedValue = signal<Nullable<T>>(undefined);
+  const selected = signal<Nullable<T>>(undefined);
 
   searchTerm$
     .pipe(
@@ -45,13 +45,13 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
       }),
     )
     .subscribe((response) => {
-      value.set(putSelectedFirst(selectedValue(), response));
+      value.set(putSelectedFirst(selected(), response));
     });
 
   effect(() => {
-    const selected = selectedValue();
+    const selected_ = selected();
     const options = untracked(value);
-    value.set(putSelectedFirst(selected, options));
+    value.set(putSelectedFirst(selected_, options));
   });
 
   function putSelectedFirst(selected: Nullable<T>, options: T[]): T[] {
@@ -68,8 +68,8 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
     value: value.asReadonly(),
     loading: loading.asReadonly(),
     error: error.asReadonly(),
+    selected,
     updateSearchTerm: (value: string) => searchTerm$.next(value),
     comparator: (a: T, b: T) => identity(a) === identity(b),
-    select: (option: Nullable<T>) => selectedValue.set(option),
   };
 }

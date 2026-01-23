@@ -1,6 +1,12 @@
-import { afterNextRender, Component, inject } from '@angular/core';
+import { afterNextRender, Component, inject, WritableSignal } from '@angular/core';
 import { AppointeeService } from './appointee/appointee.service';
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -53,11 +59,7 @@ export class App {
 
   constructor() {
     const { appointee } = this.form.controls;
-    appointee.valueChanges
-      .pipe(takeUntilDestroyed(), startWith(appointee.value))
-      .subscribe((value) => {
-        this.appointeeSearch.select(value);
-      });
+    syncSignalWithFormControl(appointee, this.appointeeSearch.selected);
   }
 
   updateProgrammatically() {
@@ -69,4 +71,13 @@ export class App {
       },
     });
   }
+}
+
+function syncSignalWithFormControl<T>(
+  control: AbstractControl<T>,
+  signal: WritableSignal<T>,
+): void {
+  control.valueChanges.pipe(takeUntilDestroyed(), startWith(control.value)).subscribe((value) => {
+    signal.set(value);
+  });
 }
