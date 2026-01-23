@@ -14,14 +14,14 @@ const mockSearchResult = faker.helpers.multiple<Appointee>(
 const repeatedName = 'David Bate';
 mockSearchResult.push(
   {
-    id: faker.string.nanoid(),
+    id: 'abcd',
     name: repeatedName,
-    jobTitle: faker.person.jobTitle(),
+    jobTitle: 'Director',
   },
   {
-    id: faker.string.nanoid(),
+    id: 'bca',
     name: repeatedName,
-    jobTitle: faker.person.jobTitle(),
+    jobTitle: 'Director',
   },
 );
 

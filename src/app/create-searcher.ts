@@ -7,8 +7,10 @@ import {
   finalize,
   switchMap,
 } from 'rxjs/operators';
-import { assertInInjectionContext, signal } from '@angular/core';
+import { assertInInjectionContext, effect, signal, untracked } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+
+type Nullable<T> = T | undefined | null;
 
 export interface CreateSearcherParams<T> {
   loader: (params: { searchTerm: string }) => Observable<T[]>;
@@ -22,6 +24,7 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
   const value = signal<T[]>([]);
   const loading = signal(false);
   const error = signal<string | undefined>(undefined);
+  const selectedValue = signal<Nullable<T>>(undefined);
 
   searchTerm$
     .pipe(
@@ -35,15 +38,31 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
         return loader({ searchTerm }).pipe(
           catchError((searchError: HttpErrorResponse) => {
             error.set(searchError.message);
-            return of([]);
+            return of<T[]>([]);
           }),
           finalize(() => loading.set(false)),
         );
       }),
     )
     .subscribe((response) => {
-      value.set(response);
+      value.set(putSelectedFirst(selectedValue(), response));
     });
+
+  effect(() => {
+    const selected = selectedValue();
+    const options = untracked(value);
+    value.set(putSelectedFirst(selected, options));
+  });
+
+  function putSelectedFirst(selected: Nullable<T>, options: T[]): T[] {
+    if (!selected) {
+      return options;
+    }
+    const withoutSelected = options.filter((option) => {
+      return identity(option) !== identity(selected);
+    });
+    return [selected, ...withoutSelected];
+  }
 
   return {
     value: value.asReadonly(),
@@ -51,5 +70,6 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
     error: error.asReadonly(),
     updateSearchTerm: (value: string) => searchTerm$.next(value),
     comparator: (a: T, b: T) => identity(a) === identity(b),
+    select: (option: Nullable<T>) => selectedValue.set(option),
   };
 }
