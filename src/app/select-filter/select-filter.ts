@@ -42,7 +42,7 @@ export class SelectFilter {
   constructor() {
     const matSelect = inject(MatSelect, { optional: true });
     if (!matSelect) {
-      throw new Error('<dil-select-filter /> must be used inside a <mat-select />');
+      throw new Error('<app-select-filter /> must be used inside a <mat-select />');
     }
     let lastSelectedOption: MatOption | MatOption[] = [];
 
