@@ -6,8 +6,9 @@ import {
   distinctUntilChanged,
   finalize,
   switchMap,
+  tap,
 } from 'rxjs/operators';
-import { assertInInjectionContext, effect, signal, untracked } from '@angular/core';
+import { assertInInjectionContext, computed, effect, signal, untracked } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 type Nullable<T> = T | undefined | null;
@@ -26,11 +27,18 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
   const error = signal<string | undefined>(undefined);
   const selected = signal<Nullable<T>>(undefined);
 
+  const isEmpty = computed(() => values().length === 0);
+  const searchTermEmpty = signal(true);
+  const noItemsFound = computed(() => {
+    return isEmpty() && !searchTermEmpty();
+  });
+
   searchTerm$
     .pipe(
       takeUntilDestroyed(),
       debounceTime(200),
       distinctUntilChanged(),
+      tap((searchTerm) => searchTermEmpty.set(!searchTerm)),
       switchMap((searchTerm) => {
         loading.set(true);
         error.set(undefined);
@@ -69,6 +77,8 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
     loading: loading.asReadonly(),
     error: error.asReadonly(),
     selected,
+    isEmpty,
+    noItemsFound,
     updateSearchTerm: (value: string) => searchTerm$.next(value),
     comparator: (a: T, b: T) => identity(a) === identity(b),
   };

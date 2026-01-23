@@ -42,14 +42,7 @@ export class App {
   }
 
   readonly form = this.#fb.group({
-    appointee: this.#fb.control<Appointee | null>(
-      {
-        id: 'abcd',
-        name: 'David Bate',
-        jobTitle: 'Director',
-      },
-      { validators: [Validators.required] },
-    ),
+    appointee: this.#fb.control<Appointee | null>(null, { validators: [Validators.required] }),
   });
 
   readonly appointeeSearch = createSearcher({
