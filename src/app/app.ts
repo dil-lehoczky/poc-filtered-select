@@ -60,6 +60,10 @@ export class App {
       },
     });
   }
+
+  loadOptionsManually(): void {
+    this.appointeeSearch.loadOptions().subscribe();
+  }
 }
 
 function syncSignalWithFormControl<T>(

@@ -34,24 +34,27 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
     return isEmpty() && !searchTermEmpty();
   });
 
+  function loadOptions(params: { searchTerm?: string } = {}): Observable<T[]> {
+    const { searchTerm = '' } = params;
+    loading.set(true);
+    error.set(undefined);
+
+    return loader({ searchTerm }).pipe(
+      catchError((searchError: HttpErrorResponse) => {
+        error.set(searchError.message);
+        return of<T[]>([]);
+      }),
+      finalize(() => loading.set(false)),
+    );
+  }
+
   toObservable(searchTerm)
     .pipe(
       skip(1), // Don't trigger search with the initial empty search term
       takeUntilDestroyed(),
       debounceTime(200),
       distinctUntilChanged(),
-      switchMap((searchTerm) => {
-        loading.set(true);
-        error.set(undefined);
-
-        return loader({ searchTerm }).pipe(
-          catchError((searchError: HttpErrorResponse) => {
-            error.set(searchError.message);
-            return of<T[]>([]);
-          }),
-          finalize(() => loading.set(false)),
-        );
-      }),
+      switchMap((searchTerm) => loadOptions({ searchTerm })),
     )
     .subscribe((response) => {
       values.set(putSelectedFirst(selected(), response));
@@ -81,6 +84,7 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
     isEmpty,
     noItemsFound,
     searchTerm,
+    loadOptions: () => loadOptions().pipe(tap((response) => values.set(response))),
     comparator: (a: T, b: T) => identity(a) === identity(b),
   };
 }

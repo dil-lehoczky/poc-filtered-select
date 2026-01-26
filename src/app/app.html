@@ -31,6 +31,9 @@
   </mat-form-field>
 </form>
 
-<button (click)="updateProgrammatically()">Update value programmatically</button>
+<div style="display: flex; gap: 1rem">
+  <button (click)="updateProgrammatically()">Update value programmatically</button>
+  <button (click)="loadOptionsManually()">Load options manually</button>
+</div>
 
 {{ form.value | json }}
