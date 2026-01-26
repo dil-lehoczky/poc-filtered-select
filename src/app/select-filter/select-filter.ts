@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, model, output } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelect } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,7 +14,8 @@ import { MatIconModule } from '@angular/material/icon';
           matInput
           aria-label="Search"
           placeholder="Search"
-          (input)="filterChange.emit($event.target.value)"
+          [value]="filter()"
+          (input)="filter.set($event.target.value)"
           (keydown.space)="stopPropagation($event)"
         />
       </mat-form-field>
@@ -27,7 +28,7 @@ import { MatIconModule } from '@angular/material/icon';
   styles: ``,
 })
 export class SelectFilter {
-  readonly filterChange = output<string>();
+  readonly filter = model('');
 
   constructor() {
     const matSelect = inject(MatSelect, { optional: true });
