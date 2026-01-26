@@ -1,10 +1,11 @@
 import { Observable, of, Subject } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import {
   catchError,
   debounceTime,
   distinctUntilChanged,
   finalize,
+  skip,
   switchMap,
   tap,
 } from 'rxjs/operators';
@@ -21,24 +22,24 @@ export interface CreateSearcherParams<T> {
 export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>) {
   assertInInjectionContext(createSearcher);
 
-  const searchTerm$ = new Subject<string>();
+  const searchTerm = signal('');
   const values = signal<T[]>([]);
   const loading = signal(false);
   const error = signal<string | undefined>(undefined);
   const selected = signal<Nullable<T>>(undefined);
 
   const isEmpty = computed(() => values().length === 0);
-  const searchTermEmpty = signal(true);
+  const searchTermEmpty = computed(() => !searchTerm());
   const noItemsFound = computed(() => {
     return isEmpty() && !searchTermEmpty();
   });
 
-  searchTerm$
+  toObservable(searchTerm)
     .pipe(
+      skip(1), // Don't trigger search with the initial empty search term
       takeUntilDestroyed(),
       debounceTime(200),
       distinctUntilChanged(),
-      tap((searchTerm) => searchTermEmpty.set(!searchTerm)),
       switchMap((searchTerm) => {
         loading.set(true);
         error.set(undefined);
@@ -79,7 +80,7 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
     selected,
     isEmpty,
     noItemsFound,
-    updateSearchTerm: (value: string) => searchTerm$.next(value),
+    searchTerm,
     comparator: (a: T, b: T) => identity(a) === identity(b),
   };
 }

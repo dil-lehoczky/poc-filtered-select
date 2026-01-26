@@ -7,7 +7,7 @@
       panelWidth=""
       [compareWith]="appointeeSearch.comparator"
     >
-      <app-select-filter (filterChange)="appointeeSearch.updateSearchTerm($event)">
+      <app-select-filter (filterChange)="appointeeSearch.searchTerm.set($event)">
         @if (appointeeSearch.loading()) {
           <mat-option disabled>Loading...</mat-option>
         } @else if (appointeeSearch.error()) {

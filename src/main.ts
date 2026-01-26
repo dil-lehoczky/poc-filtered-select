@@ -4,6 +4,6 @@ import { App } from './app/app';
 import { worker } from './mocks/browser';
 
 (async () => {
-  await worker.start();
+  await worker.start({ onUnhandledRequest: 'bypass' });
   bootstrapApplication(App, appConfig).catch((err) => console.error(err));
 })();
