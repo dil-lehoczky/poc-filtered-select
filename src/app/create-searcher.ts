@@ -29,7 +29,7 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
   const selected = signal<Nullable<T>>(undefined);
 
   const isEmpty = computed(() => values().length === 0);
-  const searchTermEmpty = computed(() => !searchTerm());
+  const searchTermEmpty = signal(true);
   const noItemsFound = computed(() => {
     return isEmpty() && !searchTermEmpty();
   });
@@ -60,6 +60,7 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
       takeUntilDestroyed(),
       debounceTime(300),
       distinctUntilChanged(),
+      tap((searchTerm) => searchTermEmpty.set(!searchTerm)),
       switchMap((searchTerm) => loadOptions({ searchTerm })),
     )
     .subscribe();
