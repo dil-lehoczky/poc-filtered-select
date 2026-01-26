@@ -58,7 +58,7 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
     .pipe(
       skip(1), // Don't trigger search with the initial empty search term
       takeUntilDestroyed(),
-      debounceTime(200),
+      debounceTime(300),
       distinctUntilChanged(),
       switchMap((searchTerm) => loadOptions({ searchTerm })),
     )
