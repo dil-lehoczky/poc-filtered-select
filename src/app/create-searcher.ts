@@ -39,12 +39,18 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
     loading.set(true);
     error.set(undefined);
 
-    return loader({ searchTerm }).pipe(
-      catchError((searchError: HttpErrorResponse) => {
-        error.set(searchError.message);
+    const request$ = loader({ searchTerm }).pipe(
+      catchError((httpError: HttpErrorResponse) => {
+        error.set(httpError.message);
         return of<T[]>([]);
       }),
       finalize(() => loading.set(false)),
+    );
+
+    return request$.pipe(
+      tap((response) => {
+        values.set(putSelectedFirst(selected(), response));
+      }),
     );
   }
 
@@ -56,9 +62,7 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
       distinctUntilChanged(),
       switchMap((searchTerm) => loadOptions({ searchTerm })),
     )
-    .subscribe((response) => {
-      values.set(putSelectedFirst(selected(), response));
-    });
+    .subscribe();
 
   effect(() => {
     const selected_ = selected();
@@ -84,7 +88,7 @@ export function createSearcher<T>({ loader, identity }: CreateSearcherParams<T>)
     isEmpty,
     noItemsFound,
     searchTerm,
-    loadOptions: () => loadOptions().pipe(tap((response) => values.set(response))),
+    loadOptions,
     comparator: (a: T, b: T) => identity(a) === identity(b),
   };
 }
