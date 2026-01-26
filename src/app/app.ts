@@ -1,4 +1,4 @@
-import { afterNextRender, Component, inject, WritableSignal } from '@angular/core';
+import { Component, inject, WritableSignal } from '@angular/core';
 import { AppointeeService } from './appointee/appointee.service';
 import {
   AbstractControl,
@@ -36,10 +36,6 @@ import { startWith } from 'rxjs';
 export class App {
   readonly #appointees = inject(AppointeeService);
   readonly #fb = inject(FormBuilder);
-
-  fos(a: any) {
-    console.log(a);
-  }
 
   readonly form = this.#fb.group({
     appointee: this.#fb.control<Appointee | null>(null, { validators: [Validators.required] }),
